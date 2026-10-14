@@ -8,7 +8,7 @@ export type DifficultyDimension = 3 | 4 | 5;
 export interface PuzzleTile {
   readonly id: number;
   readonly originIndex: number;
-  currentIndex: number;
+  readonly currentIndex: number;
 }
 
 export interface PuzzleImage {
@@ -17,6 +17,20 @@ export interface PuzzleImage {
   readonly filename: string;
   readonly artist?: string;
   readonly attribution?: string;
+}
+
+export interface SwapRecord {
+  readonly indexA: number;
+  readonly indexB: number;
+}
+
+export interface PuzzleState {
+  readonly dimension: DifficultyDimension;
+  readonly tiles: readonly PuzzleTile[];
+  readonly moves: number;
+  readonly isSolved: boolean;
+  readonly canUndo: boolean;
+  readonly lastSwap: SwapRecord | null;
 }
 
 export const DIFFICULTY_PRESETS: Record<

@@ -40,28 +40,38 @@
 ## Phase 2B: Static Game Interface
 
 - **Status:** Completed & Verified
-- **Branch:** `feat/phase-2b-static-game-ui` (cut from updated `develop`)
+- **Branch:** Merged into `develop` (`6fb8802`)
 - **Key Deliverables:**
-  1. **Game Header (`src/components/Header.tsx`):**
-     - Clean, quiet typography displaying title `DragAndSwap` and subtle tagline.
-  2. **Static HUD (`src/components/GameHud.tsx`):**
-     - Displays moves (`Moves: 0`) and timer (`00:00`) in pill-shaped minimal surface container.
-  3. **Presentational Controls (`src/components/ControlBar.tsx`):**
-     - Action buttons: Undo (disabled), Restart (disabled), and Reference Preview (disabled).
-     - Difficulty segmented control: $3 \times 3$ (selected by default), $4 \times 4$, and $5 \times 5$ grid pills.
-     - Marked explicitly as presentational preview to avoid appearing functional prior to gameplay integration.
-  4. **Square Puzzle Board Frame (`src/components/PuzzleBoardFrame.tsx`):**
-     - Fixed 1:1 aspect ratio container with soft borders and warm shadows.
-     - CSS Grid rendering placeholder tiles with tactile slot numbers ($1 \dots N^2$).
-  5. **Responsive Application Assembly (`src/App.tsx`, `src/styles/game.css`):**
-     - Composes the header, HUD, board, controls, and subtle status notice in a mobile-first container (`max-width: 520px`).
-     - Fully responsive across mobile screens ($320\text{px}\text{--}480\text{px}$) and desktop with zero horizontal overflow.
-  6. **Component Rendering Test Suite (`src/components/components.test.tsx`):**
-     - Comprehensive unit tests verifying static rendering of all components and default prop behavior using Vitest.
+  - Game Header (`src/components/Header.tsx`).
+  - Static HUD (`src/components/GameHud.tsx`).
+  - Presentational Controls (`src/components/ControlBar.tsx`).
+  - Square Puzzle Board Frame (`src/components/PuzzleBoardFrame.tsx`).
+  - Responsive Application Assembly (`src/App.tsx`, `src/styles/game.css`).
+  - Component Rendering Test Suite (`src/components/components.test.tsx`).
+
+---
+
+## Phase 3: Puzzle Engine
+
+- **Status:** Completed & Verified
+- **Branch:** `feat/phase-3-puzzle-engine` (cut from updated `develop`)
+- **Key Deliverables:**
+  1. **Pure TypeScript Engine Core ([`src/lib/puzzle-engine.ts`](../src/lib/puzzle-engine.ts)):**
+     - Pure functional state transitions independent of React and DOM.
+     - Board initialization with randomized derangements (Sattolo algorithm) guaranteeing no tile starts in its solved position ($p(i) \neq i$ for all $i$).
+     - Solved-state detection (`isBoardSolved`, `getCorrectTileCount`).
+     - Free pairwise tile swapping (`swapTiles`) with out-of-bounds guards, same-slot cancellation, and post-win input locking.
+     - Move counter tracking monotonic valid moves.
+     - Single-step undo mechanics (`undoSwap`) with 1-step memory limit, move decrement, and exhaustion guards.
+     - Difficulty switching (`changeDifficulty`) and reset/restart (`restartPuzzle`) for $3 \times 3$, $4 \times 4$, and $5 \times 5$ tiers.
+  2. **Deterministic Seeded PRNG ([`src/lib/prng.ts`](../src/lib/prng.ts)):**
+     - Mulberry32 pseudorandom generator providing reproducible scrambles for deterministic testing.
+  3. **Comprehensive Test Suite ([`src/lib/puzzle-engine.test.ts`](../src/lib/puzzle-engine.test.ts)):**
+     - 17 unit tests verifying derangement properties, solved detection, board locking, free pairwise swapping, invalid input handling, single-step undo exhaustion, restarts, difficulty tiers, and a deterministic step-by-step walkthrough to solution.
 - **Explicit Confirmation of Scope Boundaries:**
-  - **Zero gameplay logic implemented:** No tile swapping, drag-and-drop, shuffling, timer ticks, undo state, or game-state management.
-  - Controls are purely presentational.
-  - No artwork or external assets added.
+  - **Zero React or DOM coupling:** The engine consists strictly of pure functions and immutable state.
+  - **No drag-and-drop, timer behavior, animations, or new UI components were implemented.**
+  - **No artwork or unnecessary dependencies added.**
 
 ---
 
@@ -101,7 +111,10 @@ DragAndSwap/
 │   ├── hooks/
 │   │   └── .gitkeep
 │   ├── lib/
-│   │   └── .gitkeep
+│   │   ├── .gitkeep
+│   │   ├── prng.ts
+│   │   ├── puzzle-engine.test.ts
+│   │   └── puzzle-engine.ts
 │   ├── styles/
 │   │   ├── game.css
 │   │   ├── index.css
@@ -122,4 +135,4 @@ DragAndSwap/
 - **`npm run lint` (`eslint .`)**: Passed (0 errors, 0 warnings).
 - **`npm run format:check` (`prettier --check .`)**: Passed.
 - **`npm run build` (`tsc && vite build`)**: Passed.
-- **`npm test` (`vitest run`)**: Passed (2 test files, 9 tests passed).
+- **`npm test` (`vitest run`)**: Passed (3 test files, 28 tests passed).
