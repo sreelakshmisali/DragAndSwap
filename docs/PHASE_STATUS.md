@@ -27,25 +27,41 @@
 ## Phase 2A: Project Foundation
 
 - **Status:** Completed & Verified
-- **Branch:** `feat/phase-2-project-foundation` (cut from updated `develop`)
+- **Branch:** Merged into `develop` (`0e9ad12`)
 - **Key Deliverables:**
-  1. **Design Tokens & Theme Foundation (`src/styles/tokens.css`):**
-     - Full set of CSS custom properties adhering strictly to the approved visual direction (_Clean, Minimal, Calming, Warm, Artistic, Premium_).
-     - Color system: warm off-white parchment background (`#fbf9f5`), surface colors, deep charcoal typography (`#262422`), warm secondary stone (`#6b665f`), soft stone borders (`#e5dfd7`), and earthy warm clay accents (`#8c6d58`).
-     - Typography scale, spacing scale (4px base), border radii, subtle warm elevation shadows, and ease-out motion transitions.
-  2. **Global Styling & Viewport Hygiene (`src/styles/index.css`):**
-     - Mobile-browser-first baseline reset, safe area support, horizontal overflow prevention, and mobile touch hygiene (`touch-action: none` container hooks, suppressed selection callouts).
-  3. **Path Alias Architecture:**
-     - Configured `@/*` path alias in [`vite.config.ts`](../vite.config.ts) and [`tsconfig.json`](../tsconfig.json).
-  4. **Data Contracts & Configuration (`src/types/puzzle.ts`):**
-     - Strict TypeScript definitions for `PuzzleTile`, `PuzzleImage`, and difficulty tiers ($3 \times 3$, $4 \times 4$, $5 \times 5$) without implementing runtime gameplay mechanics.
-  5. **Basic Testing Setup (Vitest):**
-     - Configured Vitest runner (`npm test`) with zero extra DOM overhead.
-     - Created foundation verification test [`src/types/puzzle.test.ts`](../src/types/puzzle.test.ts) testing path alias resolution and contract presets.
+  - Design tokens in `src/styles/tokens.css` (warm, clean, minimal, calming, premium palette, typography, spacing, shadows).
+  - Global styling and mobile viewport hygiene in `src/styles/index.css`.
+  - Path alias `@/*` configured in `vite.config.ts` and `tsconfig.json`.
+  - Puzzle data contracts and difficulty presets in `src/types/puzzle.ts`.
+  - Testing setup with Vitest and contract verification tests in `src/types/puzzle.test.ts`.
+
+---
+
+## Phase 2B: Static Game Interface
+
+- **Status:** Completed & Verified
+- **Branch:** `feat/phase-2b-static-game-ui` (cut from updated `develop`)
+- **Key Deliverables:**
+  1. **Game Header (`src/components/Header.tsx`):**
+     - Clean, quiet typography displaying title `DragAndSwap` and subtle tagline.
+  2. **Static HUD (`src/components/GameHud.tsx`):**
+     - Displays moves (`Moves: 0`) and timer (`00:00`) in pill-shaped minimal surface container.
+  3. **Presentational Controls (`src/components/ControlBar.tsx`):**
+     - Action buttons: Undo (disabled), Restart (disabled), and Reference Preview (disabled).
+     - Difficulty segmented control: $3 \times 3$ (selected by default), $4 \times 4$, and $5 \times 5$ grid pills.
+     - Marked explicitly as presentational preview to avoid appearing functional prior to gameplay integration.
+  4. **Square Puzzle Board Frame (`src/components/PuzzleBoardFrame.tsx`):**
+     - Fixed 1:1 aspect ratio container with soft borders and warm shadows.
+     - CSS Grid rendering placeholder tiles with tactile slot numbers ($1 \dots N^2$).
+  5. **Responsive Application Assembly (`src/App.tsx`, `src/styles/game.css`):**
+     - Composes the header, HUD, board, controls, and subtle status notice in a mobile-first container (`max-width: 520px`).
+     - Fully responsive across mobile screens ($320\text{px}\text{--}480\text{px}$) and desktop with zero horizontal overflow.
+  6. **Component Rendering Test Suite (`src/components/components.test.tsx`):**
+     - Comprehensive unit tests verifying static rendering of all components and default prop behavior using Vitest.
 - **Explicit Confirmation of Scope Boundaries:**
-  - **Zero puzzle mechanics, drag-and-drop, swapping, timers, undo, or shuffle logic implemented.**
-  - **No full game interface or artwork added.**
-  - Minimal foundation only, strictly within Phase 2A boundaries.
+  - **Zero gameplay logic implemented:** No tile swapping, drag-and-drop, shuffling, timer ticks, undo state, or game-state management.
+  - Controls are purely presentational.
+  - No artwork or external assets added.
 
 ---
 
@@ -74,7 +90,12 @@ DragAndSwap/
 │   ├── app/
 │   │   └── .gitkeep
 │   ├── components/
-│   │   └── .gitkeep
+│   │   ├── .gitkeep
+│   │   ├── components.test.tsx
+│   │   ├── ControlBar.tsx
+│   │   ├── GameHud.tsx
+│   │   ├── Header.tsx
+│   │   └── PuzzleBoardFrame.tsx
 │   ├── features/
 │   │   └── .gitkeep
 │   ├── hooks/
@@ -82,6 +103,7 @@ DragAndSwap/
 │   ├── lib/
 │   │   └── .gitkeep
 │   ├── styles/
+│   │   ├── game.css
 │   │   ├── index.css
 │   │   └── tokens.css
 │   ├── types/
@@ -100,4 +122,4 @@ DragAndSwap/
 - **`npm run lint` (`eslint .`)**: Passed (0 errors, 0 warnings).
 - **`npm run format:check` (`prettier --check .`)**: Passed.
 - **`npm run build` (`tsc && vite build`)**: Passed.
-- **`npm test` (`vitest run`)**: Passed (1 test file, 2 tests passed).
+- **`npm test` (`vitest run`)**: Passed (2 test files, 9 tests passed).
