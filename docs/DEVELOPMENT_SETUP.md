@@ -70,6 +70,14 @@ To automatically format files:
 npm run format
 ```
 
+### 4. Unit Testing
+
+Runs tests using Vitest:
+
+```bash
+npm test
+```
+
 ## Production Build and Preview
 
 ### 1. Build Production Assets

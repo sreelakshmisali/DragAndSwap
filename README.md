@@ -4,9 +4,9 @@ DragAndSwap is a mobile-browser-first picture puzzle game where players reconstr
 
 ## Current Project Status
 
-- **Phase:** Phase 0 (Project Foundation and Skeleton)
-- **Status:** Initial project skeleton completed and verified.
-- **Scope Note:** Gameplay features (puzzle boards, tile swapping, image loading, timers, moves) are not yet implemented. Phase 0 establishes only the core tooling, baseline architecture, and development workflow.
+- **Phase:** Phase 2A (Project Foundation)
+- **Status:** Project foundation, styling tokens, path aliases, contracts, and testing setup completed and verified.
+- **Scope Note:** Gameplay features (puzzle boards, tile swapping, image loading, timers, moves) are not yet implemented. Phase 2A establishes design tokens, application framing, path aliases, data contracts, and test tooling.
 
 ## Technology Stack
 
@@ -16,6 +16,7 @@ DragAndSwap is a mobile-browser-first picture puzzle game where players reconstr
 - **Package Manager:** [npm](https://www.npmjs.com/)
 - **Linter:** [ESLint](https://eslint.org/) (flat configuration)
 - **Formatter:** [Prettier](https://prettier.io/)
+- **Test Runner:** [Vitest](https://vitest.dev/)
 
 ## Repository
 
@@ -49,22 +50,26 @@ The following npm scripts are configured in `package.json`:
 | `npm run type-check`   | Runs TypeScript compiler checks without emitting files (`tsc --noEmit`) |
 | `npm run format:check` | Verifies code formatting with Prettier                                  |
 | `npm run format`       | Formats project files with Prettier                                     |
+| `npm test`             | Runs unit and configuration tests using Vitest                          |
 
-## Scope Boundaries (Phase 0)
+## Scope Boundaries
 
 ### What Is Implemented
 
 - React + Vite + TypeScript project structure with strict type-checking.
+- Path aliases (`@/*` pointing to `./src/*`).
+- Reusable CSS design tokens adhering to the approved warm, minimal visual direction.
+- Core data contracts and difficulty presets in `src/types/puzzle.ts`.
+- Basic unit testing setup with Vitest.
 - ESLint and Prettier configurations.
 - Minimal, neutral application shell with mobile viewport meta tag and overflow safety.
-- Project documentation and Git repository foundation.
+- Project documentation and Git workflow.
 
 ### What Is NOT Implemented
 
 - Puzzle board or grid rendering.
 - Tile splitting, scrambling, or dragging/swapping mechanics.
 - Image selection or asset decoding.
-- Difficulty levels or game modes.
-- Timers, move counters, or scoring.
+- Interactive gameplay timers, move counters, or scoring.
 - Hints, preview thumbnails, or completion screens.
 - Backend services, user accounts, or persistent storage.

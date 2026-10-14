@@ -1,0 +1,89 @@
+/**
+ * DragAndSwap — Visual Design Tokens
+ * Aesthetic Direction: Clean, Minimal, Calming, Warm, Artistic, Premium
+ */
+
+:root {
+  /* Color Palette — Warm Neutral System */
+  --color-bg: #fbf9f5;
+  --color-bg-subtle: #f4efea;
+  --color-surface: #ffffff;
+  --color-surface-elevated: #ffffff;
+
+  /* Typography Colors */
+  --color-text-primary: #262422;
+  --color-text-secondary: #6b665f;
+  --color-text-muted: #9e9890;
+
+  /* Borders & Dividers */
+  --color-border: #e5dfd7;
+  --color-border-subtle: #eee9e2;
+  --color-border-hover: #cfc7bc;
+  --color-border-focus: #8c6d58;
+
+  /* Accent & Interaction (Warm Clay / Earth) */
+  --color-accent: #8c6d58;
+  --color-accent-hover: #755944;
+  --color-accent-subtle: #f5ece4;
+  --color-selected-outline: #8c6d58;
+
+  /* Typography Scale */
+  --font-family-sans:
+    system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, sans-serif;
+  --font-family-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  --font-size-xs: 0.75rem; /* 12px */
+  --font-size-sm: 0.875rem; /* 14px */
+  --font-size-base: 1rem; /* 16px */
+  --font-size-lg: 1.125rem; /* 18px */
+  --font-size-xl: 1.25rem; /* 20px */
+  --font-size-2xl: 1.5rem; /* 24px */
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.6;
+
+  --letter-spacing-tight: -0.015em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.02em;
+
+  /* Spacing Scale (4px base) */
+  --space-1: 0.25rem; /* 4px */
+  --space-2: 0.5rem; /* 8px */
+  --space-3: 0.75rem; /* 12px */
+  --space-4: 1rem; /* 16px */
+  --space-5: 1.25rem; /* 20px */
+  --space-6: 1.5rem; /* 24px */
+  --space-8: 2rem; /* 32px */
+  --space-10: 2.5rem; /* 40px */
+  --space-12: 3rem; /* 48px */
+
+  /* Border Radii */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* Elevation & Shadows (Warm, Soft Tones) */
+  --shadow-sm: 0 1px 2px rgba(38, 36, 34, 0.04);
+  --shadow-md:
+    0 4px 12px rgba(38, 36, 34, 0.06), 0 1px 3px rgba(38, 36, 34, 0.04);
+  --shadow-lifted:
+    0 8px 24px rgba(38, 36, 34, 0.1), 0 2px 6px rgba(38, 36, 34, 0.05);
+
+  /* Transitions & Motion Curves */
+  --transition-fast: 150ms ease-out;
+  --transition-normal: 200ms ease-out;
+  --transition-slow: 300ms ease-out;
+
+  /* Layout Boundaries */
+  --max-app-width: 520px;
+  --board-padding: var(--space-4);
+}
