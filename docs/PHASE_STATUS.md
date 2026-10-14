@@ -80,7 +80,7 @@ DragAndSwap/
 
 ## Git Status and Commit Information
 
-- **Branch**: `main` (with `develop` branch created from initial commit)
-- **Commit ID**: Pending initial commit
-- **Push Status**: Pending push verification
+- **Branch**: `main` (production branch) & `develop` (integration branch)
+- **Commit ID**: Initial foundation commit `afd2cd2327e8c5661aba00f57c0b6e0a12818f31` (`afd2cd2`)
+- **Push Status**: Successfully pushed to `origin/main` and `origin/develop`
 - **Known Issues / Blockers**: None.
