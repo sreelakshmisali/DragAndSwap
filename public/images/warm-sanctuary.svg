@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800">
+  <defs>
+    <!-- Warm subtle gradients -->
+    <linearGradient id="skyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fdfbf7" />
+      <stop offset="100%" stop-color="#f5ede3" />
+    </linearGradient>
+    <linearGradient id="wallGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#dfcfbe" />
+      <stop offset="100%" stop-color="#caa78d" />
+    </linearGradient>
+    <linearGradient id="archGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#c98a65" />
+      <stop offset="100%" stop-color="#9a5f3e" />
+    </linearGradient>
+    <linearGradient id="terracotta" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#b86b4b" />
+      <stop offset="100%" stop-color="#914f35" />
+    </linearGradient>
+    <linearGradient id="sage" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#7a8d79" />
+      <stop offset="100%" stop-color="#556956" />
+    </linearGradient>
+    <linearGradient id="sunGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#e8a86b" />
+      <stop offset="100%" stop-color="#d48243" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background Canvas -->
+  <rect width="800" height="800" fill="url(#skyGrad)" />
+
+  <!-- Sun / Celestial Disc (Top Right Quadrant) -->
+  <circle cx="560" cy="220" r="110" fill="url(#sunGrad)" opacity="0.9" />
+
+  <!-- Distant Hill Line -->
+  <path d="M0,520 Q240,460 480,510 T800,480 L800,800 L0,800 Z" fill="#e7dacb" />
+
+  <!-- Midground Architectural Block (Left) -->
+  <rect x="80" y="380" width="260" height="420" rx="4" fill="url(#wallGrad)" />
+
+  <!-- Terracotta Arch (Central Left) -->
+  <path d="M120,740 L120,490 A90,90 0 0,1 300,490 L300,740 Z" fill="url(#archGrad)" />
+  <!-- Inner Arch Shadow -->
+  <path d="M145,740 L145,505 A65,65 0 0,1 275,505 L275,740 Z" fill="#42291d" opacity="0.85" />
+
+  <!-- Central Column Pillar -->
+  <rect x="360" y="320" width="70" height="480" fill="#e3d4c3" />
+  <rect x="350" y="300" width="90" height="20" rx="2" fill="#caa78d" />
+
+  <!-- Large Right Arch Portal -->
+  <path d="M460,760 L460,340 A140,140 0 0,1 740,340 L740,760 Z" fill="url(#terracotta)" />
+  <path d="M490,760 L490,360 A110,110 0 0,1 710,360 L710,760 Z" fill="#2d1c14" opacity="0.9" />
+
+  <!-- Warm Light Glow Inside Right Arch -->
+  <ellipse cx="600" cy="520" rx="75" ry="140" fill="#d9996d" opacity="0.35" />
+
+  <!-- Botanical Plant / Sage Fronds (Foreground Left) -->
+  <path d="M210,800 Q190,670 120,620 Q180,640 210,800 Z" fill="url(#sage)" />
+  <path d="M210,800 Q220,640 180,560 Q230,620 210,800 Z" fill="#8ba08a" />
+  <path d="M210,800 Q250,650 300,590 Q250,660 210,800 Z" fill="url(#sage)" />
+  <path d="M210,800 Q260,680 340,660 Q270,700 210,800 Z" fill="#556956" />
+
+  <!-- Terracotta Ceramic Vase (Center Foreground) -->
+  <path d="M375,760 L365,670 Q360,645 375,630 Q395,615 415,630 Q430,645 425,670 L415,760 Z" fill="#c47853" />
+  <ellipse cx="395" cy="630" rx="20" ry="6" fill="#8c4728" />
+  <path d="M395,625 Q410,540 430,490" stroke="#5d6e5c" stroke-width="4" fill="none" stroke-linecap="round" />
+  <ellipse cx="430" cy="490" rx="14" ry="7" transform="rotate(-30 430 490)" fill="#7a8d79" />
+  <ellipse cx="418" cy="530" rx="12" ry="6" transform="rotate(25 418 530)" fill="#8ba08a" />
+  <ellipse cx="406" cy="570" rx="13" ry="6" transform="rotate(-35 406 570)" fill="#687b67" />
+
+  <!-- Clean Border Framing Accent -->
+  <rect x="16" y="16" width="768" height="768" fill="none" stroke="#262422" stroke-width="2" opacity="0.1" />
+</svg>

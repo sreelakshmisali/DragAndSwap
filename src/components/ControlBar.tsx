@@ -1,11 +1,24 @@
 import type { DifficultyDimension } from '@/types/puzzle';
 
 export interface ControlBarProps {
+  canUndo?: boolean;
+  onUndo?: () => void;
+  onRestart?: () => void;
+  onTogglePreview?: () => void;
   selectedDifficulty?: DifficultyDimension;
   onDifficultyChange?: (dim: DifficultyDimension) => void;
+  isSolved?: boolean;
 }
 
-export function ControlBar({ selectedDifficulty = 3 }: ControlBarProps) {
+export function ControlBar({
+  canUndo = false,
+  onUndo,
+  onRestart,
+  onTogglePreview,
+  selectedDifficulty = 3,
+  onDifficultyChange,
+  isSolved = false,
+}: ControlBarProps) {
   const difficultyTiers: readonly DifficultyDimension[] = [3, 4, 5];
 
   return (
@@ -14,9 +27,10 @@ export function ControlBar({ selectedDifficulty = 3 }: ControlBarProps) {
         <button
           type="button"
           className="control-btn"
-          disabled
-          aria-label="Undo last move (presentational preview)"
-          title="Undo (presentational preview in Phase 2B)"
+          disabled={!canUndo || isSolved}
+          onClick={onUndo}
+          aria-label="Undo last move"
+          title={canUndo ? 'Undo last swap' : 'Undo unavailable'}
           data-testid="control-undo"
         >
           <span className="control-icon" aria-hidden="true">
@@ -28,9 +42,9 @@ export function ControlBar({ selectedDifficulty = 3 }: ControlBarProps) {
         <button
           type="button"
           className="control-btn"
-          disabled
-          aria-label="Restart puzzle (presentational preview)"
-          title="Restart (presentational preview in Phase 2B)"
+          onClick={onRestart}
+          aria-label="Restart puzzle"
+          title="Restart with fresh scramble"
           data-testid="control-restart"
         >
           <span className="control-icon" aria-hidden="true">
@@ -42,9 +56,9 @@ export function ControlBar({ selectedDifficulty = 3 }: ControlBarProps) {
         <button
           type="button"
           className="control-btn"
-          disabled
-          aria-label="Preview completed reference image (presentational preview)"
-          title="Preview (presentational preview in Phase 2B)"
+          onClick={onTogglePreview}
+          aria-label="Preview completed reference image"
+          title="Toggle reference preview"
           data-testid="control-preview"
         >
           <span className="control-icon" aria-hidden="true">
@@ -69,8 +83,8 @@ export function ControlBar({ selectedDifficulty = 3 }: ControlBarProps) {
                 type="button"
                 className={`difficulty-pill ${isSelected ? 'is-selected' : ''}`}
                 aria-pressed={isSelected}
-                disabled
-                title={`Grid size ${dim}x${dim} (presentational preview in Phase 2B)`}
+                onClick={() => onDifficultyChange?.(dim)}
+                title={`Select ${dim}x${dim} grid`}
                 data-testid={`difficulty-${dim}x${dim}`}
               >
                 {dim}×{dim}
