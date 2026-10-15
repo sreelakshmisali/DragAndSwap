@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800">
+  <defs>
+    <linearGradient id="skyDawn" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#faeee3" />
+      <stop offset="60%" stop-color="#eed8c5" />
+      <stop offset="100%" stop-color="#dfbeaa" />
+    </linearGradient>
+    <linearGradient id="orbGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#d66847" />
+      <stop offset="100%" stop-color="#9d3d23" />
+    </linearGradient>
+    <linearGradient id="dune1" x1="0%" y1="0%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#c48a69" />
+      <stop offset="100%" stop-color="#a06443" />
+    </linearGradient>
+    <linearGradient id="dune2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#8c5338" />
+      <stop offset="100%" stop-color="#5a2e1d" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="800" fill="url(#skyDawn)" />
+
+  <!-- Geometric Rising Sun -->
+  <circle cx="400" cy="400" r="220" fill="url(#orbGrad)" />
+
+  <!-- Diagonal Geometric Slices / Architecture -->
+  <polygon points="0,480 800,280 800,800 0,800" fill="url(#dune1)" opacity="0.9" />
+  <polygon points="0,620 800,460 800,800 0,800" fill="url(#dune2)" />
+
+  <!-- Minimalist Stepped Archway -->
+  <path d="M260,800 L260,540 A140,140 0 0,1 540,540 L540,800 Z" fill="#2e1a12" opacity="0.95" />
+  <path d="M300,800 L300,560 A100,100 0 0,1 500,560 L500,800 Z" fill="#f7eadf" opacity="0.9" />
+  <circle cx="400" cy="620" r="45" fill="#c47853" />
+
+  <!-- Clean Border Framing -->
+  <rect x="20" y="20" width="760" height="760" fill="none" stroke="#262422" stroke-width="2" opacity="0.1" />
+</svg>
