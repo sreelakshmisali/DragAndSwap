@@ -22,6 +22,33 @@ export function formatTime(seconds: number): string {
   return `${mins}:${secs}`;
 }
 
+export function findTargetSlotFromElements(
+  elements: ReadonlyArray<{
+    closest: (selector: string) => { dataset?: { slotIndex?: string } } | null;
+  }>,
+  draggedSlot: number | null,
+  totalTiles: number
+): number | null {
+  for (const el of elements) {
+    const tileEl = el.closest('[data-slot-index]');
+    if (tileEl?.dataset?.slotIndex !== undefined) {
+      const slot = Number(tileEl.dataset.slotIndex);
+      if (
+        !Number.isNaN(slot) &&
+        slot !== draggedSlot &&
+        slot >= 0 &&
+        slot < totalTiles
+      ) {
+        return slot;
+      }
+    }
+  }
+  return null;
+}
+
+export type PendingConfirmation =
+  { type: 'restart' } | { type: 'difficulty'; dimension: DifficultyDimension };
+
 export interface UsePuzzleGameOptions {
   initialDimension?: DifficultyDimension;
   initialImage?: PuzzleImage;
@@ -46,6 +73,8 @@ export function usePuzzleGame({
     null
   );
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [pendingConfirmation, setPendingConfirmation] =
+    useState<PendingConfirmation | null>(null);
 
   // Timer state
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
@@ -100,8 +129,8 @@ export function usePuzzleGame({
     setSelectedSlot(null);
   }, [puzzleState.canUndo, puzzleState.isSolved]);
 
-  // Restart puzzle
-  const handleRestart = useCallback(() => {
+  // Core restart implementation
+  const performRestart = useCallback(() => {
     setPuzzleState((prev) => restartPuzzle(prev, randomFn));
     setElapsedSeconds(0);
     setIsTimerRunning(false);
@@ -109,12 +138,12 @@ export function usePuzzleGame({
     setDraggedSlot(null);
     setHoveredSlot(null);
     setDragOffset(null);
+    setPendingConfirmation(null);
   }, [randomFn]);
 
-  // Change difficulty dimension
-  const handleDifficultyChange = useCallback(
+  // Core difficulty change implementation
+  const performDifficultyChange = useCallback(
     (newDim: DifficultyDimension) => {
-      if (newDim === puzzleState.dimension) return;
       setPuzzleState((prev) => changeDifficulty(prev, newDim, randomFn));
       setElapsedSeconds(0);
       setIsTimerRunning(false);
@@ -122,9 +151,66 @@ export function usePuzzleGame({
       setDraggedSlot(null);
       setHoveredSlot(null);
       setDragOffset(null);
+      setPendingConfirmation(null);
     },
-    [puzzleState.dimension, randomFn]
+    [randomFn]
   );
+
+  // Restart puzzle with confirmation if moves > 0 and unsolved
+  const handleRestart = useCallback(() => {
+    if (puzzleState.moves > 0 && !puzzleState.isSolved) {
+      setPendingConfirmation({ type: 'restart' });
+    } else {
+      performRestart();
+    }
+  }, [performRestart, puzzleState.isSolved, puzzleState.moves]);
+
+  // Change difficulty with confirmation if moves > 0 and unsolved
+  const handleDifficultyChange = useCallback(
+    (newDim: DifficultyDimension) => {
+      if (newDim === puzzleState.dimension) return;
+      if (puzzleState.moves > 0 && !puzzleState.isSolved) {
+        setPendingConfirmation({ type: 'difficulty', dimension: newDim });
+      } else {
+        performDifficultyChange(newDim);
+      }
+    },
+    [
+      performDifficultyChange,
+      puzzleState.dimension,
+      puzzleState.isSolved,
+      puzzleState.moves,
+    ]
+  );
+
+  const confirmPendingAction = useCallback(() => {
+    if (!pendingConfirmation) return;
+    if (pendingConfirmation.type === 'restart') {
+      performRestart();
+    } else if (pendingConfirmation.type === 'difficulty') {
+      performDifficultyChange(pendingConfirmation.dimension);
+    }
+  }, [pendingConfirmation, performDifficultyChange, performRestart]);
+
+  const cancelPendingAction = useCallback(() => {
+    setPendingConfirmation(null);
+  }, []);
+
+  // Deselect tile when tapping outside the board
+  useEffect(() => {
+    if (selectedSlot === null) return;
+
+    const handlePointerDownOutside = (event: PointerEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (!target?.closest('[data-slot-index]')) {
+        setSelectedSlot(null);
+      }
+    };
+
+    window.addEventListener('pointerdown', handlePointerDownOutside);
+    return () =>
+      window.removeEventListener('pointerdown', handlePointerDownOutside);
+  }, [selectedSlot]);
 
   // Pointer interactions for mobile touchscreen and desktop mouse
   const handleTilePointerDown = useCallback(
@@ -163,29 +249,31 @@ export function usePuzzleGame({
 
       setDragOffset({ x: deltaX, y: deltaY });
 
-      // Determine slot under pointer safely
-      const elementUnderPointer =
-        typeof document !== 'undefined' &&
-        typeof document.elementFromPoint === 'function'
-          ? document.elementFromPoint(event.clientX, event.clientY)
-          : null;
-      const targetTileEl = elementUnderPointer?.closest(
-        '[data-slot-index]'
-      ) as HTMLElement | null;
-
-      if (targetTileEl) {
-        const targetSlot = Number(targetTileEl.dataset.slotIndex);
-        if (
-          !Number.isNaN(targetSlot) &&
-          targetSlot !== draggedSlot &&
-          targetSlot >= 0 &&
-          targetSlot < puzzleState.tiles.length
-        ) {
-          setHoveredSlot(targetSlot);
-          return;
+      // Determine slot under pointer safely using elementsFromPoint or fallback
+      let targetSlot: number | null = null;
+      if (typeof document !== 'undefined') {
+        if (typeof document.elementsFromPoint === 'function') {
+          const elements = document.elementsFromPoint(
+            event.clientX,
+            event.clientY
+          );
+          targetSlot = findTargetSlotFromElements(
+            elements,
+            draggedSlot,
+            puzzleState.tiles.length
+          );
+        } else if (typeof document.elementFromPoint === 'function') {
+          const el = document.elementFromPoint(event.clientX, event.clientY);
+          targetSlot = el
+            ? findTargetSlotFromElements(
+                [el],
+                draggedSlot,
+                puzzleState.tiles.length
+              )
+            : null;
         }
       }
-      setHoveredSlot(null);
+      setHoveredSlot(targetSlot);
     },
     [draggedSlot, puzzleState.tiles.length]
   );
@@ -256,6 +344,9 @@ export function usePuzzleGame({
     formattedTime: formatTime(elapsedSeconds),
     isTimerRunning: isTimerRunning && !puzzleState.isSolved,
     isPreviewOpen,
+    pendingConfirmation,
+    confirmPendingAction,
+    cancelPendingAction,
     togglePreview,
     closePreview,
     handleUndo,

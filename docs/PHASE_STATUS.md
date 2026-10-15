@@ -99,8 +99,12 @@
      - Responsive grid difficulty switching ($3 \times 3$, $4 \times 4$, $5 \times 5$).
      - Single-step undo with active/disabled state binding.
   6. **Comprehensive Test Suite ([`src/components/components.test.tsx`](../src/components/components.test.tsx)):**
-     - 21 component and integration tests verifying rendering, tile background calculations, formatted time, preview modal toggles, completion screen metrics, and layout integration.
-     - Entire repository test suite passes with 40 tests across 3 suites.
+     - 28 component and integration tests verifying rendering, tile background calculations, formatted time, preview modal toggles, completion screen metrics, confirmation dialogs, pointer target identification, and layout integration.
+     - Entire repository test suite passes with 47 tests across 3 suites.
+  7. **Specification Compliance & Review Hardening:**
+     - Gentle in-app `ConfirmationModal` guarding restart and difficulty changes when `moves > 0`.
+     - Robust target detection via `elementsFromPoint` and `findTargetSlotFromElements` correctly detecting destination tiles beneath dragged tiles.
+     - Outside click/tap listener to deselect active tile selection per specification.
 
 ---
 
@@ -130,6 +134,7 @@ DragAndSwap/
 │   ├── components/
 │   │   ├── CompletionCard.tsx
 │   │   ├── components.test.tsx
+│   │   ├── ConfirmationModal.tsx
 │   │   ├── ControlBar.tsx
 │   │   ├── GameHud.tsx
 │   │   ├── Header.tsx
@@ -162,4 +167,4 @@ DragAndSwap/
 - **`npm run lint` (`eslint .`)**: Passed (0 errors, 0 warnings).
 - **`npm run format:check` (`prettier --check .`)**: Passed.
 - **`npm run build` (`tsc && vite build`)**: Passed.
-- **`npm test` (`vitest run`)**: Passed (3 test files, 40 tests passed).
+- **`npm test` (`vitest run`)**: Passed (3 test files, 47 tests passed).

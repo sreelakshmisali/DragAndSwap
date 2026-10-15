@@ -1,4 +1,5 @@
 import { CompletionCard } from '@/components/CompletionCard';
+import { ConfirmationModal } from '@/components/ConfirmationModal';
 import { ControlBar } from '@/components/ControlBar';
 import { GameHud } from '@/components/GameHud';
 import { Header } from '@/components/Header';
@@ -16,6 +17,9 @@ export default function App() {
     dragOffset,
     formattedTime,
     isPreviewOpen,
+    pendingConfirmation,
+    confirmPendingAction,
+    cancelPendingAction,
     togglePreview,
     closePreview,
     handleUndo,
@@ -26,6 +30,12 @@ export default function App() {
     handleTilePointerUp,
     handleTilePointerCancel,
   } = usePuzzleGame();
+
+  const isRestartConfirm = pendingConfirmation?.type === 'restart';
+  const targetDifficulty =
+    pendingConfirmation?.type === 'difficulty'
+      ? pendingConfirmation.dimension
+      : null;
 
   return (
     <main className="game-layout">
@@ -72,6 +82,20 @@ export default function App() {
         isOpen={isPreviewOpen}
         image={currentImage}
         onClose={closePreview}
+      />
+
+      <ConfirmationModal
+        isOpen={pendingConfirmation !== null}
+        title={isRestartConfirm ? 'Restart Puzzle?' : 'Change Grid Dimension?'}
+        message={
+          isRestartConfirm
+            ? `You have made ${puzzleState.moves} move${puzzleState.moves === 1 ? '' : 's'}. Are you sure you want to restart with a fresh scramble?`
+            : `You have made ${puzzleState.moves} move${puzzleState.moves === 1 ? '' : 's'}. Changing to a ${targetDifficulty}×${targetDifficulty} grid will start a new puzzle.`
+        }
+        confirmLabel={isRestartConfirm ? 'Restart' : 'Change Grid'}
+        cancelLabel="Keep Playing"
+        onConfirm={confirmPendingAction}
+        onCancel={cancelPendingAction}
       />
     </main>
   );

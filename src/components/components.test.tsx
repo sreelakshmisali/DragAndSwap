@@ -2,12 +2,13 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import App from '@/App';
 import { CompletionCard } from '@/components/CompletionCard';
+import { ConfirmationModal } from '@/components/ConfirmationModal';
 import { ControlBar } from '@/components/ControlBar';
 import { GameHud } from '@/components/GameHud';
 import { Header } from '@/components/Header';
 import { PuzzleBoardFrame } from '@/components/PuzzleBoardFrame';
 import { ReferencePreviewModal } from '@/components/ReferencePreviewModal';
-import { formatTime } from '@/hooks/usePuzzleGame';
+import { findTargetSlotFromElements, formatTime } from '@/hooks/usePuzzleGame';
 import { CURATED_IMAGES, DEFAULT_IMAGE } from '@/lib/images';
 import { createSolvedTiles } from '@/lib/puzzle-engine';
 import { getTileBackgroundPosition } from '@/lib/tile-layout';
@@ -282,6 +283,45 @@ describe('CompletionCard Component', () => {
   });
 });
 
+describe('ConfirmationModal Component', () => {
+  it('renders nothing when closed', () => {
+    const html = renderToStaticMarkup(
+      <ConfirmationModal
+        isOpen={false}
+        title="Restart Puzzle?"
+        message="Are you sure?"
+        onConfirm={noop}
+        onCancel={noop}
+      />
+    );
+    expect(html).toBe('');
+  });
+
+  it('renders title, message, cancel and confirm buttons when open', () => {
+    const html = renderToStaticMarkup(
+      <ConfirmationModal
+        isOpen={true}
+        title="Restart Puzzle?"
+        message="You have made 5 moves. Are you sure you want to restart?"
+        confirmLabel="Restart"
+        cancelLabel="Keep Playing"
+        onConfirm={noop}
+        onCancel={noop}
+      />
+    );
+
+    expect(html).toContain('modal-backdrop');
+    expect(html).toContain('Restart Puzzle?');
+    expect(html).toContain(
+      'You have made 5 moves. Are you sure you want to restart?'
+    );
+    expect(html).toContain('Restart');
+    expect(html).toContain('Keep Playing');
+    expect(html).toContain('data-testid="btn-confirm-proceed"');
+    expect(html).toContain('data-testid="btn-confirm-cancel"');
+  });
+});
+
 describe('App Root Layout', () => {
   it('renders full interactive game interface with board, HUD, and controls', () => {
     const html = renderToStaticMarkup(<App />);
@@ -338,5 +378,66 @@ describe('Tile Layout & Time Formatter Utilities', () => {
     expect(CURATED_IMAGES.length).toBeGreaterThanOrEqual(2);
     expect(CURATED_IMAGES[0].id).toBe('warm-sanctuary');
     expect(CURATED_IMAGES[1].id).toBe('geometric-dawn');
+  });
+});
+
+describe('findTargetSlotFromElements', () => {
+  it('returns target slot when hovered element is a tile with different slot', () => {
+    const mockElements = [
+      {
+        closest: (sel: string) =>
+          sel === '[data-slot-index]' ? { dataset: { slotIndex: '5' } } : null,
+      },
+    ];
+
+    expect(findTargetSlotFromElements(mockElements, 2, 9)).toBe(5);
+  });
+
+  it('skips dragged slot when dragged tile is top of stack and finds slot below it', () => {
+    const mockElements = [
+      {
+        closest: (sel: string) =>
+          sel === '[data-slot-index]'
+            ? { dataset: { slotIndex: '2' } } // dragged tile
+            : null,
+      },
+      {
+        closest: (sel: string) =>
+          sel === '[data-slot-index]'
+            ? { dataset: { slotIndex: '7' } } // destination tile beneath
+            : null,
+      },
+    ];
+
+    expect(findTargetSlotFromElements(mockElements, 2, 9)).toBe(7);
+  });
+
+  it('returns null when elements do not match tile selector', () => {
+    const mockElements = [
+      {
+        closest: () => null,
+      },
+    ];
+    expect(findTargetSlotFromElements(mockElements, 1, 9)).toBeNull();
+  });
+
+  it('returns null when slot index is out of bounds or invalid', () => {
+    const mockElements = [
+      {
+        closest: () => ({ dataset: { slotIndex: '99' } }),
+      },
+    ];
+    expect(findTargetSlotFromElements(mockElements, 0, 9)).toBeNull();
+
+    const nanElements = [
+      {
+        closest: () => ({ dataset: { slotIndex: 'invalid' } }),
+      },
+    ];
+    expect(findTargetSlotFromElements(nanElements, 0, 9)).toBeNull();
+  });
+
+  it('returns null when element list is empty', () => {
+    expect(findTargetSlotFromElements([], 0, 9)).toBeNull();
   });
 });
