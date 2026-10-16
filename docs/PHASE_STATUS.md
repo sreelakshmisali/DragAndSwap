@@ -108,6 +108,27 @@
 
 ---
 
+## Phase 5: Accessibility, Polish, and End-to-End Testing
+
+- **Status:** Completed & Verified
+- **Branch:** `feat/phase-5-polish-accessibility` (cut from merged `develop`)
+- **Key Deliverables:**
+  1. **Comprehensive Accessibility & Screen-Reader Integration:**
+     - Keyboard navigation supporting standard 2D grid arrows (Up, Down, Left, Right, Home, End), Space/Enter to select and swap tiles, and Escape to cancel selection.
+     - Live screen-reader announcement region (`role="status"`, `aria-live="polite"`, `aria-atomic="true"`) announcing selections, swaps, undos, restarts, difficulty changes, and completion.
+     - Explicit `:focus-visible` high-contrast outlines for all interactive elements (tiles, controls, difficulty pills, modal action buttons).
+     - WCAG 2.1 touch target compliance (min 44×44px for buttons and modal controls; min 38px for segmented pills).
+     - `prefers-reduced-motion` media query gracefully dampening transitions for motion-sensitive users.
+     - Semantic HTML and detailed `aria-label` attributes indicating tile position, piece index, correctness status, and selection state.
+  2. **Automated End-to-End Testing Suite ([`e2e/puzzle-game.spec.ts`](../e2e/puzzle-game.spec.ts), [`playwright.config.ts`](../playwright.config.ts)):**
+     - 18 automated E2E tests across Desktop Google Chrome and Mobile Chrome viewports.
+     - Covers the entire core game flow: initial layout & CSS sliced image rendering, tap-to-select and tap-to-swap, drag-and-drop pairwise swap, invalid drag recovery outside the board, single-step undo and exhaustion, restart with confirmation, difficulty switching with confirmation, reference preview modal, full keyboard navigation, and full puzzle completion flow to locked board and CompletionCard replay.
+  3. **Repository Polish & Hygiene:**
+     - Added dedicated E2E test script `"test:e2e": "playwright test"` in `package.json`.
+     - Ignored Playwright test artifact directories (`test-results/`, `playwright-report/`) in `.gitignore` and `.prettierignore`.
+
+---
+
 ## Project Structure Status
 
 ```text
@@ -121,10 +142,13 @@ DragAndSwap/
 │   ├── PHASE_STATUS.md
 │   ├── PRODUCT_SPECIFICATION.md
 │   └── PROJECT_OVERVIEW.md
+├── e2e/
+│   └── puzzle-game.spec.ts
 ├── eslint.config.js
 ├── index.html
 ├── package.json
 ├── package-lock.json
+├── playwright.config.ts
 ├── public/
 │   └── images/
 │       ├── geometric-dawn.svg
@@ -168,3 +192,4 @@ DragAndSwap/
 - **`npm run format:check` (`prettier --check .`)**: Passed.
 - **`npm run build` (`tsc && vite build`)**: Passed.
 - **`npm test` (`vitest run`)**: Passed (3 test files, 47 tests passed).
+- **`npm run test:e2e` (`playwright test`)**: Passed (18 tests passed across Desktop and Mobile Chrome).

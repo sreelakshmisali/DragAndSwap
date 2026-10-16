@@ -217,6 +217,32 @@ describe('PuzzleBoardFrame Component', () => {
     expect(html).toContain('is-solved-tile');
     expect(html).not.toContain('tile-slot-badge');
   });
+
+  it('renders accessibility labels and grid region attributes', () => {
+    const tiles = createSolvedTiles(3);
+    const html = renderToStaticMarkup(
+      <PuzzleBoardFrame
+        dimension={3}
+        tiles={tiles}
+        image={DEFAULT_IMAGE}
+        isSolved={false}
+        selectedSlot={0}
+        draggedSlot={null}
+        hoveredSlot={null}
+        dragOffset={null}
+        onTilePointerDown={noop}
+        onTilePointerMove={noop}
+        onTilePointerUp={noop}
+        onTilePointerCancel={noop}
+      />
+    );
+
+    expect(html).toContain('role="region"');
+    expect(html).toContain('aria-roledescription="puzzle board"');
+    expect(html).toContain('Position 1 of 9, contains piece 1');
+    expect(html).toContain('in correct position');
+    expect(html).toContain('currently selected');
+  });
 });
 
 describe('ReferencePreviewModal Component', () => {
@@ -335,6 +361,8 @@ describe('App Root Layout', () => {
     expect(html).toContain('3×3');
     expect(html).toContain('data-slot-index="0"');
     expect(html).toContain('data-slot-index="8"');
+    expect(html).toContain('data-testid="sr-announcements"');
+    expect(html).toContain('aria-live="polite"');
   });
 });
 

@@ -36,3 +36,9 @@ Thumbs.db
 
 # Linter cache
 .eslintcache
+
+# Test outputs
+test-results/
+playwright-report/
+blob-report/
+

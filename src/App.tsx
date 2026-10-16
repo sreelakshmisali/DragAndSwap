@@ -20,6 +20,7 @@ export default function App() {
     pendingConfirmation,
     confirmPendingAction,
     cancelPendingAction,
+    announcement,
     togglePreview,
     closePreview,
     handleUndo,
@@ -29,6 +30,7 @@ export default function App() {
     handleTilePointerMove,
     handleTilePointerUp,
     handleTilePointerCancel,
+    handleTileKeyDown,
   } = usePuzzleGame();
 
   const isRestartConfirm = pendingConfirmation?.type === 'restart';
@@ -39,6 +41,17 @@ export default function App() {
 
   return (
     <main className="game-layout">
+      {/* Accessible live region for screen-reader announcements */}
+      <div
+        className="sr-only"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        data-testid="sr-announcements"
+      >
+        {announcement}
+      </div>
+
       <Header />
       <GameHud moves={puzzleState.moves} timeFormatted={formattedTime} />
 
@@ -55,6 +68,7 @@ export default function App() {
         onTilePointerMove={handleTilePointerMove}
         onTilePointerUp={handleTilePointerUp}
         onTilePointerCancel={handleTilePointerCancel}
+        onTileKeyDown={handleTileKeyDown}
       />
 
       {puzzleState.isSolved ? (

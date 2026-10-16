@@ -75,6 +75,11 @@ export function usePuzzleGame({
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [pendingConfirmation, setPendingConfirmation] =
     useState<PendingConfirmation | null>(null);
+  const [announcement, setAnnouncement] = useState('');
+
+  const announce = useCallback((message: string) => {
+    setAnnouncement(message);
+  }, []);
 
   // Timer state
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
@@ -108,30 +113,50 @@ export function usePuzzleGame({
   }, [isTimerRunning, puzzleState.isSolved]);
 
   // Handle Free Pairwise Swap
-  const executeSwap = useCallback((slotA: number, slotB: number) => {
-    setPuzzleState((prev) => {
-      const next = swapTiles(prev, slotA, slotB);
-      if (next.isSolved) {
-        setIsTimerRunning(false);
-      }
-      return next;
-    });
-    setSelectedSlot(null);
-    setDraggedSlot(null);
-    setHoveredSlot(null);
-    setDragOffset(null);
-  }, []);
+  const executeSwap = useCallback(
+    (slotA: number, slotB: number) => {
+      setPuzzleState((prev) => {
+        const next = swapTiles(prev, slotA, slotB);
+        if (next.isSolved) {
+          setIsTimerRunning(false);
+          announce(
+            `Picture Restored! Puzzle completed successfully in ${next.moves} moves.`
+          );
+        } else {
+          announce(
+            `Swapped tile at position ${slotA + 1} with tile at position ${slotB + 1}. Total moves: ${next.moves}.`
+          );
+        }
+        return next;
+      });
+      setSelectedSlot(null);
+      setDraggedSlot(null);
+      setHoveredSlot(null);
+      setDragOffset(null);
+    },
+    [announce]
+  );
 
   // Undo previous swap
   const handleUndo = useCallback(() => {
     if (!puzzleState.canUndo || puzzleState.isSolved) return;
-    setPuzzleState((prev) => undoSwap(prev));
+    setPuzzleState((prev) => {
+      const next = undoSwap(prev);
+      announce(`Previous move undone. Current moves: ${next.moves}.`);
+      return next;
+    });
     setSelectedSlot(null);
-  }, [puzzleState.canUndo, puzzleState.isSolved]);
+  }, [announce, puzzleState.canUndo, puzzleState.isSolved]);
 
   // Core restart implementation
   const performRestart = useCallback(() => {
-    setPuzzleState((prev) => restartPuzzle(prev, randomFn));
+    setPuzzleState((prev) => {
+      const next = restartPuzzle(prev, randomFn);
+      announce(
+        `Puzzle restarted with a fresh scramble on ${next.dimension} by ${next.dimension} grid.`
+      );
+      return next;
+    });
     setElapsedSeconds(0);
     setIsTimerRunning(false);
     setSelectedSlot(null);
@@ -139,12 +164,18 @@ export function usePuzzleGame({
     setHoveredSlot(null);
     setDragOffset(null);
     setPendingConfirmation(null);
-  }, [randomFn]);
+  }, [announce, randomFn]);
 
   // Core difficulty change implementation
   const performDifficultyChange = useCallback(
     (newDim: DifficultyDimension) => {
-      setPuzzleState((prev) => changeDifficulty(prev, newDim, randomFn));
+      setPuzzleState((prev) => {
+        const next = changeDifficulty(prev, newDim, randomFn);
+        announce(
+          `Difficulty changed to ${newDim} by ${newDim} grid with a fresh scramble.`
+        );
+        return next;
+      });
       setElapsedSeconds(0);
       setIsTimerRunning(false);
       setSelectedSlot(null);
@@ -153,7 +184,7 @@ export function usePuzzleGame({
       setDragOffset(null);
       setPendingConfirmation(null);
     },
-    [randomFn]
+    [announce, randomFn]
   );
 
   // Restart puzzle with confirmation if moves > 0 and unsolved
@@ -211,6 +242,83 @@ export function usePuzzleGame({
     return () =>
       window.removeEventListener('pointerdown', handlePointerDownOutside);
   }, [selectedSlot]);
+
+  // Keyboard navigation & accessibility interaction
+  const handleTileKeyDown = useCallback(
+    (slotIndex: number, event: React.KeyboardEvent<HTMLDivElement>) => {
+      if (puzzleState.isSolved) return;
+
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        ensureTimerStarted();
+
+        if (selectedSlot === null) {
+          setSelectedSlot(slotIndex);
+          announce(
+            `Tile at position ${slotIndex + 1} selected. Navigate to another tile and press Enter or Space to swap, or press Escape to cancel.`
+          );
+        } else if (selectedSlot === slotIndex) {
+          setSelectedSlot(null);
+          announce(`Tile at position ${slotIndex + 1} deselected.`);
+        } else {
+          executeSwap(selectedSlot, slotIndex);
+        }
+        return;
+      }
+
+      if (event.key === 'Escape' && selectedSlot !== null) {
+        event.preventDefault();
+        setSelectedSlot(null);
+        announce('Tile selection canceled.');
+        return;
+      }
+
+      const totalTiles = puzzleState.tiles.length;
+      let nextSlot: number | null = null;
+
+      switch (event.key) {
+        case 'ArrowRight':
+          if (slotIndex + 1 < totalTiles) nextSlot = slotIndex + 1;
+          break;
+        case 'ArrowLeft':
+          if (slotIndex - 1 >= 0) nextSlot = slotIndex - 1;
+          break;
+        case 'ArrowDown':
+          if (slotIndex + puzzleState.dimension < totalTiles) {
+            nextSlot = slotIndex + puzzleState.dimension;
+          }
+          break;
+        case 'ArrowUp':
+          if (slotIndex - puzzleState.dimension >= 0) {
+            nextSlot = slotIndex - puzzleState.dimension;
+          }
+          break;
+        case 'Home':
+          nextSlot = 0;
+          break;
+        case 'End':
+          nextSlot = totalTiles - 1;
+          break;
+      }
+
+      if (nextSlot !== null) {
+        event.preventDefault();
+        const nextEl = document.querySelector<HTMLElement>(
+          `[data-slot-index="${nextSlot}"]`
+        );
+        nextEl?.focus();
+      }
+    },
+    [
+      announce,
+      ensureTimerStarted,
+      executeSwap,
+      puzzleState.dimension,
+      puzzleState.isSolved,
+      puzzleState.tiles.length,
+      selectedSlot,
+    ]
+  );
 
   // Pointer interactions for mobile touchscreen and desktop mouse
   const handleTilePointerDown = useCallback(
@@ -298,8 +406,10 @@ export function usePuzzleGame({
         // Tap gesture: Tap-to-select and Tap-to-swap
         if (selectedSlot === null) {
           setSelectedSlot(slotIndex);
+          announce(`Tile at position ${slotIndex + 1} selected.`);
         } else if (selectedSlot === slotIndex) {
           setSelectedSlot(null); // Tap same tile to deselect
+          announce(`Tile at position ${slotIndex + 1} deselected.`);
         } else {
           // Tap second tile: Execute Swap
           executeSwap(selectedSlot, slotIndex);
@@ -313,7 +423,7 @@ export function usePuzzleGame({
       dragStartPos.current = null;
       hasMovedSignificantly.current = false;
     },
-    [draggedSlot, executeSwap, hoveredSlot, selectedSlot]
+    [announce, draggedSlot, executeSwap, hoveredSlot, selectedSlot]
   );
 
   const handleTilePointerCancel = useCallback(() => {
@@ -347,6 +457,7 @@ export function usePuzzleGame({
     pendingConfirmation,
     confirmPendingAction,
     cancelPendingAction,
+    announcement,
     togglePreview,
     closePreview,
     handleUndo,
@@ -356,6 +467,7 @@ export function usePuzzleGame({
     handleTilePointerMove,
     handleTilePointerUp,
     handleTilePointerCancel,
+    handleTileKeyDown,
     executeSwap,
   };
 }

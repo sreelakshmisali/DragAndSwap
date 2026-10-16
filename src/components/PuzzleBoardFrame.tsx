@@ -1,4 +1,4 @@
-import type { CSSProperties, PointerEvent } from 'react';
+import type { CSSProperties, KeyboardEvent, PointerEvent } from 'react';
 import { getTileBackgroundPosition } from '@/lib/tile-layout';
 import type {
   DifficultyDimension,
@@ -31,6 +31,10 @@ export interface PuzzleBoardFrameProps {
     slotIndex: number,
     event: PointerEvent<HTMLDivElement>
   ) => void;
+  onTileKeyDown?: (
+    slotIndex: number,
+    event: KeyboardEvent<HTMLDivElement>
+  ) => void;
 }
 
 export function PuzzleBoardFrame({
@@ -46,6 +50,7 @@ export function PuzzleBoardFrame({
   onTilePointerMove,
   onTilePointerUp,
   onTilePointerCancel,
+  onTileKeyDown,
 }: PuzzleBoardFrameProps) {
   return (
     <section
@@ -59,6 +64,9 @@ export function PuzzleBoardFrame({
           gridTemplateColumns: `repeat(${dimension}, 1fr)`,
           gridTemplateRows: `repeat(${dimension}, 1fr)`,
         }}
+        role="region"
+        aria-roledescription="puzzle board"
+        aria-label={`Puzzle grid ${dimension} by ${dimension}, ${tiles.length} tiles total`}
         data-testid="puzzle-board-grid"
       >
         {tiles.map((tile, currentSlot) => {
@@ -81,6 +89,12 @@ export function PuzzleBoardFrame({
               : {}),
           };
 
+          const accessibleLabel = isSolved
+            ? `Restored image tile piece ${tile.originIndex + 1}`
+            : `Position ${currentSlot + 1} of ${tiles.length}, contains piece ${tile.originIndex + 1}${
+                isCorrect ? ', in correct position' : ''
+              }${isSelected ? ', currently selected' : ''}`;
+
           return (
             <div
               key={tile.id}
@@ -95,15 +109,16 @@ export function PuzzleBoardFrame({
               data-testid={`tile-slot-${currentSlot}`}
               role="button"
               tabIndex={isSolved ? -1 : 0}
-              aria-label={`Tile slot ${currentSlot + 1}, origin ${tile.originIndex + 1}`}
+              aria-label={accessibleLabel}
               aria-pressed={isSelected}
               aria-disabled={isSolved}
               onPointerDown={(e) => onTilePointerDown(currentSlot, e)}
               onPointerMove={(e) => onTilePointerMove(currentSlot, e)}
               onPointerUp={(e) => onTilePointerUp(currentSlot, e)}
               onPointerCancel={(e) => onTilePointerCancel(currentSlot, e)}
+              onKeyDown={(e) => onTileKeyDown?.(currentSlot, e)}
             >
-              {/* Subtle slot indicator only when not solved */}
+              {/* Subtle slot indicator badge only when not solved */}
               {!isSolved && (
                 <span className="tile-slot-badge" aria-hidden="true">
                   {tile.originIndex + 1}
